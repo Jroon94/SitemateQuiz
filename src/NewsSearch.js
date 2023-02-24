@@ -1,48 +1,56 @@
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
+  Button,
   SafeAreaView,
   ScrollView,
   StatusBar,
+  StyleSheet,
   TextInput,
-  useColorScheme,
 } from 'react-native';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { useQuery } from 'react-query';
 import { getNews } from './api';
 import Article from './components/Article';
+import SearchBar from './components/SearchBar';
+
+const styles = StyleSheet.create({
+  background: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'white',
+  },
+  error: {
+    color: 'red',
+  },
+});
 
 const NewsSearch = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
   const [query, setQuery] = useState('');
-  const { isLoading, error, data } = useQuery('news', () => getNews({ query }));
-
-  console.log('data:', data);
-
-  const renderContent = () => (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={backgroundStyle}>
-      <TextInput
-        onChangeText={(change) => {
-          setQuery(change);
-        }}
-      />
-      {data?.data?.articles &&
-        data?.data?.articles.map((article) => <Article {...article} />)}
-    </ScrollView>
+  const { isLoading, error, data, refetch } = useQuery('news', () =>
+    getNews({ query }),
   );
 
+  console.log(isLoading);
+
+  const renderArticles = () => {
+    if (isLoading) return <ActivityIndicator size="large" />;
+    if (error) return <Text>{error}</Text>;
+    return (
+      data?.data?.articles &&
+      data?.data?.articles.map((article, index) => (
+        <Article {...article} key={`article-${index}`} />
+      ))
+    );
+  };
+
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      {isLoading ? <ActivityIndicator /> : renderContent()}
+    <SafeAreaView>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={styles.background}>
+        <SearchBar onSearch={refetch} value={query} setValue={setQuery} />
+        {renderArticles()}
+      </ScrollView>
     </SafeAreaView>
   );
 };
