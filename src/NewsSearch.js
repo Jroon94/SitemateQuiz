@@ -30,8 +30,6 @@ const NewsSearch = () => {
     getNews({ query }),
   );
 
-  console.log(isLoading);
-
   const renderArticles = () => {
     if (isLoading) return <ActivityIndicator size="large" />;
     if (error) return <Text>{error}</Text>;
@@ -48,7 +46,12 @@ const NewsSearch = () => {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={styles.background}>
-        <SearchBar onSearch={refetch} value={query} setValue={setQuery} />
+        <SearchBar
+          onSearch={refetch}
+          value={query}
+          setValue={setQuery}
+          isLoading={isLoading}
+        />
         {renderArticles()}
       </ScrollView>
     </SafeAreaView>

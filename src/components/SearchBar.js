@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const SearchBar = ({ setValue, value, onSearch }) => {
+const SearchBar = ({ setValue, value, onSearch, isLoading }) => {
   return (
     <View>
       <TextInput
@@ -19,8 +19,10 @@ const SearchBar = ({ setValue, value, onSearch }) => {
         placeholderTextColor="gray"
         onChangeText={setValue}
         value={value}
+        returnKeyType="search"
+        onSubmitEditing={onSearch}
       />
-      <Button title="Search" onPress={onSearch} />
+      <Button title="Search" onPress={onSearch} disabled={isLoading} />
     </View>
   );
 };
